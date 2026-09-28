@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* Reliquary is a dark design in every viewer theme, so tokens stay fixed */
+:root{
+  --moss:#2B2B24; --moss-deep:#22221C; --bone:#E4DCCB; --brass:#A08C58; --rose:#7B4A4F; --veil:#8C8A82;
+  --line:rgba(160,140,88,.35);
+  --black:"UnifrakturCook","Old English Text MT",serif;
+  --serif:"EB Garamond",Garamond,Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--moss)}
+body{background:var(--moss);color:var(--bone);font-family:var(--serif);font-size:1.125rem;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+main{flex:1}
+img{max-width:100%;display:block}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* header and nav */
+header{text-align:center;padding:3rem 1rem 0}
+.mark{font-family:var(--black);font-size:clamp(3.5rem,12vw,7.5rem);line-height:1;text-decoration:none;display:inline-block}
+.tag{font-style:italic;color:var(--brass);margin-top:.4rem}
+.nav{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.2rem 1.6rem;margin-top:1.8rem;font-variant:small-caps;letter-spacing:.06em;font-size:1.15rem}
+.nav li{position:relative}
+.nav a{text-decoration:none;display:inline-block;padding:.3rem 0}
+.nav a:hover,.nav a[aria-current="page"]{color:var(--brass)}
+.nav a[aria-current="page"]{text-decoration:underline;text-underline-offset:.35em;text-decoration-thickness:1px}
+.nav ul{list-style:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);background:var(--moss);border:1px solid var(--brass);padding:.4rem 1rem;min-width:9.5rem;display:none;z-index:10;text-align:left}
+.nav li:hover>ul,.nav li:focus-within>ul{display:block}
+.rule{width:min(40rem,80%);height:1px;background:var(--brass);opacity:.6;margin:1.6rem auto 0}
+
+/* page shells */
+.page{max-width:72rem;margin:0 auto;padding:3rem 1.25rem 4rem}
+.page-title{font-family:var(--black);font-weight:700;font-size:clamp(2.4rem,6vw,3.6rem);color:var(--brass);text-align:center;line-height:1.1}
+.page-intro{font-style:italic;text-align:center;max-width:34rem;margin:.6rem auto 0;color:var(--bone);opacity:.85}
+.sub-title{font-variant:small-caps;letter-spacing:.12em;font-weight:400;font-size:1.5rem;text-align:center;margin:3.5rem 0 0;color:var(--bone)}
+.sub-title+.page-intro{margin-top:.2rem}
+.empty{text-align:center;font-style:italic;color:var(--veil);margin-top:2rem}
+
+/* work grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:2.5rem 1.75rem;margin-top:2.5rem}
+.work{text-align:center;background:none;border:0;cursor:pointer;display:block;width:100%}
+.frame{position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--moss-deep)}
+.frame img{width:100%;height:100%;object-fit:cover}
+.frame .ph{position:absolute;inset:0}
+.frame .ph::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.veil{position:absolute;inset:0;background:var(--veil);opacity:.55;transition:opacity .6s ease}
+.work:hover .veil,.work:focus-visible .veil{opacity:0}
+.cap{margin-top:.8rem;font-variant:small-caps;letter-spacing:.12em}
+.cap span{display:block;font-variant:normal;letter-spacing:0;font-style:italic;color:var(--brass);font-size:.95rem}
+
+/* home sections */
+.tenets{max-width:40rem;margin:5rem auto 0}
+.tenets ol{list-style:none;counter-reset:t;margin-top:1.5rem}
+.tenets li{counter-increment:t;padding:1.1rem 0;border-top:1px solid var(--line)}
+.tenets li::before{content:counter(t,lower-roman) ".";font-style:italic;color:var(--rose);margin-right:.6rem}
+.tenets b{font-weight:500}
+.more{display:block;text-align:center;margin-top:1.5rem;font-style:italic;color:var(--brass)}
+.band{background:var(--bone);color:var(--moss);margin-top:5rem;padding:4rem 1.25rem}
+.band .page-title{color:var(--rose)}
+.cats{max-width:64rem;margin:2rem auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:1.25rem}
+.cat{text-decoration:none;text-align:center}
+.cat .frame{aspect-ratio:1;outline:1px solid var(--moss)}
+.cat p{margin-top:.5rem;font-variant:small-caps;letter-spacing:.1em;font-size:1.15rem}
+
+/* tattoos */
+.flash{display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));gap:1.25rem;margin-top:2rem}
+.flash div{aspect-ratio:1;border:1px solid var(--brass);border-radius:50%;display:grid;place-items:center;font-style:italic;text-align:center;padding:.5rem}
+.flash div.claimed{color:var(--veil);border-color:var(--veil);text-decoration:line-through}
+.booking{max-width:38rem;margin:3rem auto 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:2rem 0;text-align:center}
+.btn{display:inline-block;margin-top:1rem;border:1px solid var(--brass);padding:.5rem 1.4rem;text-decoration:none;font-variant:small-caps;letter-spacing:.1em;background:none;cursor:pointer}
+.btn:hover{background:var(--brass);color:var(--moss)}
+
+/* musings */
+.entries{max-width:40rem;margin:2.5rem auto 0}
+.entry{padding:2rem 0;border-top:1px solid var(--line)}
+.entry h2{font-weight:500;font-size:1.6rem;line-height:1.2}
+.entry time{display:block;font-style:italic;color:var(--brass);font-size:.95rem;margin:.2rem 0 .8rem}
+
+/* shop */
+.goods{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:2.5rem 1.75rem;margin-top:2rem}
+.good .frame{aspect-ratio:1}
+.good h3{font-weight:500;font-size:1.3rem;margin-top:.8rem;line-height:1.25}
+.good p{font-size:1rem;opacity:.85}
+.good .price{color:var(--brass);font-style:italic}
+.good .sold{color:var(--veil);font-style:italic}
+.good a{font-size:1rem;color:var(--brass)}
+
+/* contact */
+.contact{max-width:34rem;margin:2.5rem auto 0;text-align:center}
+.contact .email{font-size:clamp(1.4rem,4vw,2rem);display:inline-block;margin-top:1rem;text-decoration-color:var(--brass);text-underline-offset:.25em}
+.contact p+p{margin-top:1rem}
+
+/* lightbox */
+dialog{background:var(--moss-deep);color:var(--bone);border:1px solid var(--brass);max-width:min(52rem,92vw);max-height:92vh;padding:1.25rem;margin:auto}
+dialog::backdrop{background:rgba(20,20,16,.85)}
+dialog .frame{aspect-ratio:auto;max-height:70vh}
+dialog .frame img{height:auto;max-height:70vh;object-fit:contain}
+dialog .frame .ph{position:relative;aspect-ratio:4/5;max-height:70vh;margin:0 auto}
+dialog h2{font-variant:small-caps;letter-spacing:.12em;font-weight:400;margin-top:1rem;text-align:center}
+dialog p{text-align:center;font-style:italic;color:var(--brass)}
+.close{position:absolute;top:.4rem;right:.7rem;background:none;border:0;font-size:1.8rem;line-height:1;cursor:pointer;color:var(--bone)}
+
+/* upload manager mock */
+.admin{max-width:46rem;margin:2.5rem auto 0;display:grid;gap:2rem}
+.panel{border:1px solid var(--line);padding:1.5rem}
+.panel h2{font-variant:small-caps;letter-spacing:.1em;font-weight:400;font-size:1.3rem;margin-bottom:1rem}
+.field{display:grid;gap:.3rem;margin-bottom:1rem}
+.field label{font-style:italic;color:var(--brass)}
+.field input,.field select,.field textarea{background:var(--moss-deep);border:1px solid var(--line);padding:.55rem .7rem;width:100%}
+.drop{border:1px dashed var(--brass);padding:1.5rem;text-align:center;cursor:pointer;display:block}
+.drop.over{background:rgba(160,140,88,.12)}
+.drop img{max-height:14rem;margin:0 auto .6rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.hint{font-size:.95rem;font-style:italic;opacity:.8}
+.added{list-style:none}
+.added li{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.6rem 0;border-top:1px solid var(--line)}
+.added button{background:none;border:0;color:var(--rose);cursor:pointer;font-style:italic}
+.status{min-height:1.6em;font-style:italic;color:var(--brass)}
+@media (max-width:600px){.row{grid-template-columns:1fr}}
+
+/* shop signals and cart */
+header{position:relative}
+.shop-tag{display:inline-block;font-variant:normal;letter-spacing:0;font-style:italic;font-size:.8rem;color:var(--moss);background:var(--brass);padding:0 .45rem;margin-left:.3rem;vertical-align:.15em;line-height:1.5}
+.cart-btn{position:absolute;top:1rem;right:1.25rem;background:none;border:1px solid var(--brass);color:var(--bone);padding:.35rem .9rem;cursor:pointer;font-variant:small-caps;letter-spacing:.08em;display:flex;align-items:center;gap:.5rem}
+.cart-btn:hover{background:var(--brass);color:var(--moss)}
+.cart-btn svg{width:1.1rem;height:1.1rem}
+.count{min-width:1.4rem;height:1.4rem;border-radius:50%;background:var(--rose);color:var(--bone);font-size:.85rem;display:grid;place-items:center;font-variant:normal}
+.good .actions{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1rem;margin-top:.5rem}
+.add{background:var(--brass);color:var(--moss);border:0;padding:.4rem 1rem;cursor:pointer;font-variant:small-caps;letter-spacing:.08em}
+.add:hover{background:var(--bone)}
+.visit{display:block;text-align:center;margin-top:2rem;font-style:italic;color:var(--rose)}
+#cart{margin:0 0 0 auto;height:100vh;max-height:100vh;width:min(26rem,100vw);max-width:100vw;border-width:0 0 0 1px;display:none;flex-direction:column;padding:1.5rem}
+#cart[open]{display:flex}
+#cart h2{font-family:var(--black);font-weight:700;color:var(--brass);font-size:2.2rem;text-align:left;margin:0 0 1rem;font-variant:normal;letter-spacing:0}
+.lines{list-style:none;flex:1;overflow:auto}
+.lines li{display:grid;grid-template-columns:4rem 1fr auto;gap:.8rem;align-items:center;padding:.8rem 0;border-top:1px solid var(--line)}
+.lines .frame{aspect-ratio:1}
+.lines p{text-align:left;font-style:normal;color:var(--bone);font-size:1rem;line-height:1.3}
+.lines small{color:var(--brass);font-style:italic}
+.qty{display:flex;align-items:center;gap:.4rem}
+.qty button{background:none;border:1px solid var(--line);color:var(--bone);width:1.8rem;height:1.8rem;cursor:pointer}
+.total{display:flex;justify-content:space-between;border-top:1px solid var(--brass);padding-top:1rem;margin-top:.5rem;font-size:1.2rem}
+#cart .btn{width:100%;text-align:center;margin-top:1rem}
+#cart .hint{text-align:left;color:var(--bone);margin-top:.8rem}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(150%);background:var(--bone);color:var(--moss);padding:.6rem 1.2rem;font-style:italic;transition:transform .35s ease;z-index:60}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media (max-width:600px){.cart-btn{position:static;margin:0 auto 1rem}}
+
+/* logo slot, blank room until Tal has a logo */
+.logo-slot{width:min(14rem,60%);min-height:6rem;margin:0 auto 1.2rem;border:1px dashed var(--line);display:grid;place-items:center;font-style:italic;color:var(--veil);font-size:.95rem}
+.logo-slot.filled{border:0;min-height:0}
+.logo-slot img{max-height:8rem;margin:0 auto}
+
+/* socials */
+.socials{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 1.4rem;margin-top:1rem;font-variant:small-caps;letter-spacing:.08em;font-style:normal}
+.socials a{text-decoration:none}
+.socials a:hover{color:var(--bone)}
+.socials .off{color:var(--veil);border-bottom:1px dashed var(--line)}
+footer .socials{margin:0 0 .8rem}
+
+/* home intro, doors, tabs and paging */
+.home-intro{min-height:calc(100vh - 32rem);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;max-width:40rem;margin:0 auto;padding:3rem 1.25rem}
+.hello{font-family:var(--black);font-size:clamp(2rem,6vw,3.4rem);color:var(--brass);line-height:1.15}
+.lede{margin-top:1.2rem;font-size:1.3rem;font-style:italic;opacity:.9}
+.doors{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem 1.2rem;margin-top:2rem}
+.doors .btn{margin-top:0}
+.picker{max-width:44rem;margin-top:2.5rem}
+.cat .frame{outline-color:var(--line)}
+.cat:hover .veil,.cat:focus-visible .veil{opacity:0}
+.cat .num{display:block;font-style:italic;color:var(--brass);font-size:.95rem}
+.tabs{display:flex;justify-content:center;gap:1.8rem;margin-top:1.2rem;font-variant:small-caps;letter-spacing:.06em;font-size:1.15rem}
+.tabs a{text-decoration:none;padding:.2rem 0}
+.tabs a:hover{color:var(--brass)}
+.tabs a[aria-current="page"]{color:var(--brass);text-decoration:underline;text-underline-offset:.35em;text-decoration-thickness:1px}
+.pager{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.4rem 1.4rem;margin-top:3rem;font-variant:small-caps;letter-spacing:.08em}
+.pager a{text-decoration:none;padding:.2rem .1rem}
+.pager a:hover{color:var(--brass)}
+.pager [aria-current="page"]{color:var(--brass);text-decoration:underline;text-underline-offset:.35em;text-decoration-thickness:1px}
+.pager .off{opacity:.35}
+
+footer{text-align:center;padding:3rem 1rem;font-style:italic;color:var(--brass)}
+footer a{margin:0 .5rem}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="cart-btn" id="cartBtn" aria-label="Open cart, 0 items">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+    cart <span class="count" id="count">0</span>
+  </button>
+  <div class="logo-slot" id="logo" role="img" aria-label="Logo placeholder">insert logo</div>
+  <a class="mark" href="#/">Tal</a>
+  <p class="tag">insert tagline</p>
+  <nav aria-label="Main">
+    <ul class="nav" id="nav">
+      <li><a href="#/illustrations">illustrations</a></li>
+      <li><a href="#/photographs">photographs</a>
+        <ul><li><a href="#/photographs/digital">digital</a></li><li><a href="#/photographs/film">film</a></li></ul></li>
+      <li><a href="#/collages">collages</a></li>
+      <li><a href="#/tattoos">tattoos</a>
+        <ul><li><a href="#/tattoos/flash">flash and booking</a></li></ul></li>
+      <li><a href="#/musings">musings</a></li>
+      <li><a href="#/creations">creations<span class="shop-tag">shop</span></a>
+        <ul><li><a href="#/creations/prints">prints</a></li><li><a href="#/creations/zines">zines</a></li><li><a href="#/creations/garments">garments</a></li><li><a href="#/creations/adornments">adornments</a></li></ul></li>
+      <li><a href="#/contact">contact</a></li>
+    </ul>
+  </nav>
+  <div class="rule"></div>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<footer>
+  insert footer line
+  <div id="footerSocials"></div>
+  <div><a href="#/upload">upload manager preview</a></div>
+</footer>
+
+<dialog id="cart" aria-label="Cart">
+  <button class="close" aria-label="Close cart" onclick="document.getElementById('cart').close()">&times;</button>
+  <h2>Cart</h2>
+  <div id="cartBody" style="display:flex;flex-direction:column;flex:1;min-height:0"></div>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<dialog id="box" aria-label="Artwork">
+  <button class="close" aria-label="Close" onclick="document.getElementById('box').close()">&times;</button>
+  <div id="boxBody"></div>
+</dialog>
+
+<script>
+/* ============================================================
+   CONTENT
+   Everything Tal uploads lives in these lists. A real upload
+   manager saves entries in this same shape, so swapping the
+   placeholders for real photos later changes nothing else.
+   ============================================================ */
+const EMAIL = "hello@example.com";   // Tal's real email goes here
+const SHOW_RESUME = false;           // flip to true if Tal wants a resume link
+const SOCIALS = [   // paste a full link into url to turn a name on, leave it empty to keep it as a placeholder
+  {label:"instagram", url:""},
+  {label:"tiktok", url:""},
+  {label:"pinterest", url:""},
+  {label:"other", url:""}
+];
+const LOGO_SRC = "";                 // path to Tal's logo image once it exists, for example "logo.png"
+const INTRO_HELLO = "insert welcome line";   // big line on the home page
+const INTRO_TEXT = "insert bio";   // short intro paragraph on the home page
+
+const works = [
+  {title:"illustration_01.jpg", category:"illustrations", medium:"medium", year:"year", tone:["#5b4a3f","#1f1b17"]},
+  {title:"illustration_02.jpg", category:"illustrations", medium:"medium", year:"year", tone:["#6e6450","#2b2b24"]},
+  {title:"illustration_03.jpg", category:"illustrations", medium:"medium", year:"year", tone:["#7b4a4f","#2e2a22"]},
+  {title:"digital_01.jpg", category:"digital", medium:"digital", year:"year", tone:["#4a4a3e","#15150f"]},
+  {title:"digital_02.jpg", category:"digital", medium:"digital", year:"year", tone:["#8c8a82","#22221c"]},
+  {title:"film_01.jpg", category:"film", medium:"film", year:"year", tone:["#9c8f78","#2e2a22"]},
+  {title:"film_02.jpg", category:"film", medium:"film", year:"year", tone:["#b9a88a","#3b3328"]},
+  {title:"collage_01.jpg", category:"collages", medium:"medium", year:"year", tone:["#7b4a4f","#b9a88a"]},
+  {title:"collage_02.jpg", category:"collages", medium:"medium", year:"year", tone:["#a08c58","#2b2b24"]},
+  {title:"tattoo_01.jpg", category:"tattoos", medium:"placement", year:"year", tone:["#c7b99b","#3b3328"]},
+  {title:"tattoo_02.jpg", category:"tattoos", medium:"placement", year:"year", tone:["#8c8a82","#1f1b17"]}
+];
+
+const flash = [
+  {name:"flash_01", claimed:false},{name:"flash_02", claimed:true},{name:"flash_03", claimed:false},
+  {name:"flash_04", claimed:false},{name:"flash_05", claimed:false},{name:"flash_06", claimed:true},
+  {name:"flash_07", claimed:false},{name:"flash_08", claimed:false}
+];
+
+const products = [
+  {title:"print_01.jpg", category:"prints", price:"$00", detail:"size and details", sold:false, tone:["#b9a88a","#5b4a3f"]},
+  {title:"print_02.jpg", category:"prints", price:"$00", detail:"size and details", sold:false, tone:["#9c8f78","#2e2a22"]},
+  {title:"zine_01.jpg", category:"zines", price:"$00", detail:"size and details", sold:false, tone:["#8c8a82","#2b2b24"]},
+  {title:"garment_01.jpg", category:"garments", price:"$00", detail:"size and details", sold:true, tone:["#7b4a4f","#2b2b24"]},
+  {title:"adornment_01.jpg", category:"adornments", price:"$00", detail:"size and details", sold:false, tone:["#a08c58","#3b3328"]}
+];
+
+const musings = [
+  {title:"musing_01", date:"date", body:"Text goes here."},
+  {title:"musing_02", date:"date", body:"Text goes here."},
+  {title:"musing_03", date:"date", body:"Text goes here."}
+];
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+const labels = {illustrations:"illustrations", digital:"digital", film:"film", collages:"collages", tattoos:"tattoos",
+  prints:"prints", zines:"zines", garments:"garments", adornments:"adornments"};
+const shopIntro = {
+  prints:"insert description",
+  zines:"insert description",
+  garments:"insert description",
+  adornments:"insert description"
+};
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const art = item => item.image
+  ? `<img src="${item.image}" alt="${esc(item.title)}" loading="lazy">`
+  : `<div class="ph" style="background:linear-gradient(160deg,${item.tone[0]},${item.tone[1]})" role="img" aria-label="${esc(item.title)} placeholder"></div>`;
+
+const PER = 8;      // pieces per page in a grid
+const PER_MUSING = 3;   // musings per page
+const plural = (n, one, many) => `${n} ${n===1 ? one : many}`;
+const pick = (list, per, pg) => {
+  const n = Math.max(1, Math.ceil(list.length / per));
+  const p = Math.min(Math.max(pg, 1), n);
+  return {items: list.slice((p-1)*per, p*per), pg: p};
+};
+function pager(total, per, pg, route){
+  const n = Math.ceil(total / per);
+  if(n <= 1) return "";
+  const href = p => `#/${route}${p > 1 ? "/p" + p : ""}`;
+  const nums = Array.from({length:n}, (_, i) => i + 1).map(p => p === pg
+    ? `<span aria-current="page">${p}</span>`
+    : `<a href="${href(p)}" aria-label="Page ${p}">${p}</a>`).join("");
+  const prev = pg > 1 ? `<a href="${href(pg-1)}">&larr; previous</a>` : `<span class="off">&larr; previous</span>`;
+  const next = pg < n ? `<a href="${href(pg+1)}">next &rarr;</a>` : `<span class="off">next &rarr;</span>`;
+  return `<nav class="pager" aria-label="Pages">${prev}${nums}${next}</nav>`;
+}
+const door = (href, label, sample, note) => `<a class="cat" href="${href}"><div class="frame">${art(sample)}<div class="veil"></div></div><p>${label}</p><span class="num">${note}</span></a>`;
+
+function workGrid(list, route, pg = 1){
+  if(!list.length) return `<p class="empty">Nothing here yet. New work will appear once it is uploaded.</p>`;
+  const {items, pg: p} = pick(list, PER, pg);
+  return `<div class="grid">${items.map(w=>{
+    const i = works.indexOf(w);
+    return `<button class="work" data-i="${i}"><div class="frame">${art(w)}<div class="veil"></div></div>
+      <div class="cap">${esc(w.title)}<span>${esc(w.medium)}, ${esc(w.year)}</span></div></button>`;
+  }).join("")}</div>${pager(list.length, PER, p, route)}`;
+}
+const byCat = c => works.filter(w=>w.category===c);
+
+function goodsGrid(list, route, pg = 1){
+  if(!list.length) return `<p class="empty">Nothing available right now. Check back soon.</p>`;
+  const {items, pg: p} = pick(list, PER, pg);
+  return `<div class="goods">${items.map(p=>`
+    <article class="good"><div class="frame">${art(p)}</div>
+      <h3>${esc(p.title)}</h3><p>${esc(p.detail)}</p>
+      ${p.sold ? `<p class="sold">sold</p>` : `<p class="price">${esc(p.price)}</p>
+      <div class="actions"><button class="add" data-add="${products.indexOf(p)}">add to cart</button>
+      <a href="mailto:${EMAIL}?subject=${encodeURIComponent('Question about '+p.title)}">ask a question</a></div>`}
+    </article>`).join("")}</div>${pager(list.length, PER, p, route)}`;
+}
+
+const socials = () => `<ul class="socials" aria-label="Social links">${SOCIALS.map(x => x.url
+  ? `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label)}</a></li>`
+  : `<li><span class="off" title="insert link">${esc(x.label)}</span></li>`).join("")}</ul>`;
+const tattooTabs = on => `<nav class="tabs" aria-label="Tattoos">
+  <a href="#/tattoos"${on==="work" ? ' aria-current="page"' : ""}>work</a>
+  <a href="#/tattoos/flash"${on==="flash" ? ' aria-current="page"' : ""}>flash and booking</a></nav>`;
+const sample = (list, fallback) => list[0] || {tone:["#8c8a82","#2b2b24"], title:fallback};
+
+const pages = {
+  "": () => `
+    <section class="home-intro" aria-label="Welcome">
+      <p class="hello">${esc(INTRO_HELLO)}</p>
+      <p class="lede">${esc(INTRO_TEXT)}</p>
+      <div class="doors">
+        <a class="btn" href="#/illustrations">see the work</a>
+        <a class="btn" href="#/tattoos/flash">book a tattoo</a>
+        <a class="btn" href="#/creations">visit the shop</a>
+      </div>
+    </section>`,
+
+  "illustrations": pg => `<section class="page"><h1 class="page-title">Illustrations</h1>${workGrid(byCat("illustrations"), "illustrations", pg)}</section>`,
+
+  "photographs": () => `<section class="page"><h1 class="page-title">Photographs</h1>
+    <p class="page-intro">Choose a roll to look through.</p>
+    <div class="cats picker">${["digital","film"].map(c => door(`#/photographs/${c}`, c, sample(byCat(c), c), plural(byCat(c).length, "piece", "pieces"))).join("")}</div></section>`,
+  "photographs/digital": pg => `<section class="page"><h1 class="page-title">Digital</h1>${workGrid(byCat("digital"), "photographs/digital", pg)}<a class="more" href="#/photographs">back to photographs</a></section>`,
+  "photographs/film": pg => `<section class="page"><h1 class="page-title">Film</h1>${workGrid(byCat("film"), "photographs/film", pg)}<a class="more" href="#/photographs">back to photographs</a></section>`,
+
+  "collages": pg => `<section class="page"><h1 class="page-title">Collages</h1>${workGrid(byCat("collages"), "collages", pg)}</section>`,
+
+  "tattoos": pg => `<section class="page"><h1 class="page-title">Tattoos</h1>${tattooTabs("work")}${workGrid(byCat("tattoos"), "tattoos", pg)}</section>`,
+
+  "tattoos/flash": () => `<section class="page"><h1 class="page-title">Flash</h1>${tattooTabs("flash")}
+    <p class="page-intro">insert flash details</p>
+    <div class="flash">${flash.map(f=>`<div class="${f.claimed?'claimed':''}">${esc(f.name)}</div>`).join("")}</div>
+    <div class="booking"><p>insert booking info</p>
+      <a class="btn" href="mailto:${EMAIL}?subject=Tattoo%20booking">request a booking</a></div></section>`,
+
+  "musings": pg => {
+    const {items, pg: p} = pick(musings, PER_MUSING, pg);
+    return `<section class="page"><h1 class="page-title">Musings</h1>
+    <div class="entries">${items.map(m=>`<article class="entry"><h2>${esc(m.title)}</h2><time>${esc(m.date)}</time><p>${esc(m.body)}</p></article>`).join("")}</div>${pager(musings.length, PER_MUSING, p, "musings")}</section>`;
+  },
+
+  "creations": () => `<section class="page"><h1 class="page-title">Creations</h1>
+    <p class="page-intro">The shop. Choose a section, add pieces to your cart, and check out when you are ready.</p>
+    <div class="cats picker">${Object.keys(shopIntro).map(c => {
+      const n = products.filter(p=>p.category===c).length;
+      return door(`#/creations/${c}`, c, sample(products.filter(p=>p.category===c), c), plural(n, "item", "items"));
+    }).join("")}</div></section>`,
+
+  "contact": () => `<section class="page"><h1 class="page-title">Contact</h1>
+    <div class="contact"><p>insert contact note</p>
+      <a class="email" href="mailto:${EMAIL}">${EMAIL}</a>
+      ${SHOW_RESUME ? `<p><a class="btn" href="#">view resume</a></p>` : ""}
+      ${socials()}</div></section>`,
+
+  "upload": () => `<section class="page"><h1 class="page-title">Upload Manager</h1>
+    <p class="page-intro">A preview of how Tal will add new work. On the finished site this page sits behind a private login, and uploads save permanently. In this draft they only last until the page is refreshed.</p>
+    <div class="admin">
+      <form class="panel" id="up">
+        <h2>add a piece</h2>
+        <div class="field"><label for="f-type">where does it go</label>
+          <select id="f-type" required>
+            <optgroup label="portfolio">
+              <option value="illustrations">illustrations</option><option value="digital">photographs, digital</option>
+              <option value="film">photographs, film</option><option value="collages">collages</option><option value="tattoos">tattoos</option>
+            </optgroup>
+            <optgroup label="creations shop">
+              <option value="prints">prints</option><option value="zines">zines</option><option value="garments">garments</option><option value="adornments">adornments</option>
+            </optgroup>
+          </select></div>
+        <label class="drop" id="drop" for="f-file"><span id="dropText">Drop a photo here or tap to choose one</span></label>
+        <input class="sr" type="file" id="f-file" accept="image/*">
+        <div class="field" style="margin-top:1rem"><label for="f-title">title</label><input id="f-title" required></div>
+        <div class="row">
+          <div class="field" id="w-medium"><label for="f-medium">medium or placement</label><input id="f-medium" placeholder="medium"></div>
+          <div class="field" id="w-year"><label for="f-year">year</label><input id="f-year" placeholder="2026"></div>
+          <div class="field" id="w-price" hidden><label for="f-price">price</label><input id="f-price" placeholder="$00"></div>
+          <div class="field" id="w-detail" hidden><label for="f-detail">details</label><input id="f-detail" placeholder="size and details"></div>
+        </div>
+        <button class="btn" type="submit">add to site</button>
+        <p class="status" id="status" role="status"></p>
+      </form>
+      <div class="panel"><h2>added this session</h2><ul class="added" id="added"><li class="hint">Nothing added yet.</li></ul></div>
+    </div></section>`
+};
+
+const session = [];
+const shopCats = ["prints","zines","garments","adornments"];
+
+function wireUpload(){
+  const type = document.getElementById("f-type"), file = document.getElementById("f-file"),
+        drop = document.getElementById("drop"), status = document.getElementById("status");
+  let dataUrl = null;
+  const toggle = () => {
+    const shop = shopCats.includes(type.value);
+    ["w-medium","w-year"].forEach(id=>document.getElementById(id).hidden = shop);
+    ["w-price","w-detail"].forEach(id=>document.getElementById(id).hidden = !shop);
+  };
+  type.addEventListener("change", toggle); toggle();
+  const load = f => {
+    if(!f || !f.type.startsWith("image/")){ status.textContent = "Choose an image file, like a JPG or PNG."; return; }
+    const r = new FileReader();
+    r.onload = () => { dataUrl = r.result; drop.innerHTML = `<img src="${dataUrl}" alt="Selected photo preview"><span>${esc(f.name)}</span>`; status.textContent=""; };
+    r.readAsDataURL(f);
+  };
+  file.addEventListener("change", () => load(file.files[0]));
+  ["dragenter","dragover"].forEach(e=>drop.addEventListener(e, ev=>{ev.preventDefault();drop.classList.add("over")}));
+  ["dragleave","drop"].forEach(e=>drop.addEventListener(e, ev=>{ev.preventDefault();drop.classList.remove("over")}));
+  drop.addEventListener("drop", ev => load(ev.dataTransfer.files[0]));
+
+  document.getElementById("up").addEventListener("submit", ev => {
+    ev.preventDefault();
+    if(!dataUrl){ status.textContent = "Add a photo before saving."; return; }
+    const v = id => document.getElementById(id).value.trim();
+    const c = type.value, shop = shopCats.includes(c);
+    const entry = shop
+      ? {title:v("f-title"), category:c, price:v("f-price")||"price on request", detail:v("f-detail"), sold:false, image:dataUrl}
+      : {title:v("f-title"), category:c, medium:v("f-medium")||c, year:v("f-year")||String(new Date().getFullYear()), image:dataUrl};
+    (shop ? products : works).unshift(entry);
+    session.push({entry, shop});
+    const dest = shop ? `#/creations/${c}` : (c==="digital"||c==="film" ? `#/photographs/${c}` : `#/${c}`);
+    status.innerHTML = `Added. <a href="${dest}">See it on the ${labels[c]} page</a>`;
+    ev.target.reset(); dataUrl = null; drop.innerHTML = `<span>Drop a photo here or tap to choose one</span>`; toggle();
+    listSession();
+  });
+  listSession();
+}
+function listSession(){
+  const ul = document.getElementById("added"); if(!ul) return;
+  if(!session.length){ ul.innerHTML = `<li class="hint">Nothing added yet.</li>`; return; }
+  ul.innerHTML = session.map((s,i)=>`<li><span>${esc(s.entry.title)} <em class="hint">in ${labels[s.entry.category]}</em></span><button data-rm="${i}">remove</button></li>`).join("");
+  ul.querySelectorAll("[data-rm]").forEach(b=>b.addEventListener("click",()=>{
+    const s = session[+b.dataset.rm], list = s.shop ? products : works;
+    list.splice(list.indexOf(s.entry),1); session.splice(+b.dataset.rm,1); listSession();
+  }));
+}
+
+shopCats.forEach(c => pages[`creations/${c}`] = pg => `<section class="page"><h1 class="page-title">${c[0].toUpperCase()+c.slice(1)}</h1>
+  <p class="page-intro">${shopIntro[c]}</p>${goodsGrid(products.filter(p=>p.category===c), `creations/${c}`, pg)}<a class="more" href="#/creations">back to creations</a></section>`);
+
+/* ============================================================
+   CART
+   Saved in the visitor's browser so it survives a refresh.
+   Checkout is a stand-in until a payment tool is connected.
+   ============================================================ */
+let cart = [];
+try { cart = JSON.parse(localStorage.getItem("tal-cart") || "[]"); } catch(e) { cart = []; }
+const saveCart = () => { try { localStorage.setItem("tal-cart", JSON.stringify(cart)); } catch(e) {} };
+const money = p => { const n = parseFloat(String(p).replace(/[^0-9.]/g,"")); return isNaN(n) ? 0 : n; };
+
+function addToCart(i){
+  const p = products[i]; if(!p) return;
+  const line = cart.find(l => l.title === p.title);
+  line ? line.qty++ : cart.push({title:p.title, price:p.price, qty:1, tone:p.tone, image:p.image && p.image.length < 400000 ? p.image : null});
+  saveCart(); updateCount(); toast(`${p.title} added to cart`);
+}
+function updateCount(){
+  const n = cart.reduce((a,l)=>a+l.qty,0);
+  document.getElementById("count").textContent = n;
+  document.getElementById("cartBtn").setAttribute("aria-label", `Open cart, ${n} item${n===1?"":"s"}`);
+}
+function renderCart(){
+  const body = document.getElementById("cartBody");
+  if(!cart.length){
+    body.innerHTML = `<p class="hint">Your cart is empty.</p><a class="btn" href="#/creations" onclick="document.getElementById('cart').close()">browse the shop</a>`;
+    return;
+  }
+  const total = cart.reduce((a,l)=>a+money(l.price)*l.qty,0);
+  body.innerHTML = `<ul class="lines">${cart.map((l,i)=>`<li>
+      <div class="frame">${art(l.tone ? l : {...l, tone:["#8c8a82","#2b2b24"]})}</div>
+      <div><p>${esc(l.title)}</p><small>${esc(l.price)}</small></div>
+      <div class="qty"><button data-q="${i}" data-d="-1" aria-label="Remove one">&minus;</button><span>${l.qty}</span><button data-q="${i}" data-d="1" aria-label="Add one">+</button></div>
+    </li>`).join("")}</ul>
+    <div class="total"><span>total</span><span>$${total.toFixed(2)}</span></div>
+    <button class="btn" id="checkout">check out</button>
+    <p class="hint">In this draft, checkout opens an email with the order. On the live site it will go to a secure payment page.</p>`;
+  body.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>{
+    const l = cart[+b.dataset.q]; l.qty += +b.dataset.d;
+    if(l.qty < 1) cart.splice(+b.dataset.q,1);
+    saveCart(); updateCount(); renderCart();
+  }));
+  document.getElementById("checkout").addEventListener("click",()=>{
+    const lines = cart.map(l=>`${l.qty} x ${l.title} (${l.price})`).join("\n");
+    location.href = `mailto:${EMAIL}?subject=${encodeURIComponent("Order request")}&body=${encodeURIComponent("Hi Tal, I would like to order\n\n"+lines+"\n\nTotal $"+total.toFixed(2)+"\n\nMy shipping address is\n")}`;
+  });
+}
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+document.getElementById("cartBtn").addEventListener("click",()=>{ renderCart(); document.getElementById("cart").showModal(); });
+document.getElementById("cart").addEventListener("click", e => { if(e.target.id==="cart") e.target.close(); });
+document.getElementById("app").addEventListener("click", e => { const b = e.target.closest("[data-add]"); if(b) addToCart(+b.dataset.add); });
+updateCount();
+
+function render(){
+  const raw = location.hash.replace(/^#\/?/,"");
+  const m = raw.match(/^(.*?)\/?p(\d+)$/);        // a trailing /p2 means page 2
+  const wanted = m ? m[1] : raw;
+  const pg = m ? parseInt(m[2], 10) : 1;
+  const route = pages[wanted] ? wanted : "";
+  const app = document.getElementById("app");
+  app.innerHTML = pages[route](pg);
+  document.body.classList.toggle("is-home", route === "");
+  document.querySelectorAll("#nav a").forEach(a=>{
+    const r = a.getAttribute("href").slice(2);
+    const on = route===r || (route.startsWith(r+"/") && r!=="");
+    on ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current");
+  });
+  app.querySelectorAll(".work").forEach(b=>b.addEventListener("click",()=>openWork(works[+b.dataset.i])));
+  if(route==="upload") wireUpload();
+  if(route) { app.focus({preventScroll:true}); window.scrollTo({top:document.querySelector(".rule").offsetTop - 10}); }
+  else window.scrollTo({top:0});
+  const tail = route.split("/").pop();
+  document.title = route ? `Tal, ${tail}` : "Tal";
+}
+function openWork(w){
+  document.getElementById("boxBody").innerHTML = `<div class="frame">${art(w)}</div><h2>${esc(w.title)}</h2><p>${esc(w.medium)}, ${esc(w.year)}</p>`;
+  document.getElementById("box").showModal();
+}
+document.getElementById("box").addEventListener("click", e => { if(e.target.id==="box") e.target.close(); });
+if(LOGO_SRC){
+  const l = document.getElementById("logo");
+  l.classList.add("filled"); l.removeAttribute("role"); l.removeAttribute("aria-label");
+  l.innerHTML = `<img src="${esc(LOGO_SRC)}" alt="Tal">`;
+}
+document.getElementById("footerSocials").innerHTML = socials();
+window.addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
