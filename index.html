@@ -111,7 +111,6 @@ dialog h2{font-variant:small-caps;letter-spacing:.12em;font-weight:400;margin-to
 dialog p{text-align:center;font-style:italic;color:var(--brass)}
 .close{position:absolute;top:.4rem;right:.7rem;background:none;border:0;font-size:1.8rem;line-height:1;cursor:pointer;color:var(--bone)}
 
-/* upload manager mock */
 .admin{max-width:46rem;margin:2.5rem auto 0;display:grid;gap:2rem}
 .panel{border:1px solid var(--line);padding:1.5rem}
 .panel h2{font-variant:small-caps;letter-spacing:.1em;font-weight:400;font-size:1.3rem;margin-bottom:1rem}
@@ -191,6 +190,51 @@ footer .socials{margin:0 0 .8rem}
 
 footer{text-align:center;padding:3rem 1rem;font-style:italic;color:var(--brass)}
 footer a{margin:0 .5rem}
+
+/* reading size and alignment
+   The root size grows with the screen, so every rem in this file scales together.
+   Phones land near 17px and large desktops near 22px. Text is left aligned.
+   Only the masthead (logo, name, menu) stays centered. */
+html{font-size:clamp(1.0625rem,.9rem + .55vw,1.375rem)}
+body{line-height:1.65}
+.page-title{font-size:clamp(2.6rem,7vw,4.2rem);text-align:left}
+.page-intro{text-align:left;max-width:44rem;margin:.9rem 0 0;opacity:1;font-size:1.1rem}
+.sub-title{text-align:left;font-size:1.7rem}
+.empty,.work,.cat,.more,.visit{text-align:left}
+.cap{font-size:1.1rem}
+.cap span,.cat .num,.hint{font-size:1.05rem}
+.picker{margin:2.5rem 0 0;max-width:52rem}
+.entries{margin:2.5rem 0 0;max-width:46rem}
+.entry h2{font-size:1.9rem}
+.booking{text-align:left;margin:3rem 0 0;max-width:46rem}
+.contact{text-align:left;margin:2.5rem 0 0;max-width:46rem}
+.contact .email{font-size:clamp(1.5rem,5vw,2.4rem)}
+.btn{font-size:1.1rem;padding:.6rem 1.6rem}
+.page,.home-intro,footer{max-width:58rem}
+.home-intro{align-items:flex-start;text-align:left;justify-content:center;width:100%;min-height:auto;padding-top:3.5rem;padding-bottom:4rem}
+.mark{font-size:clamp(3.2rem,9vw,5.6rem)}
+header{padding-top:2rem}
+.logo-slot{min-height:4.5rem;margin-bottom:.8rem}
+.hello{font-size:clamp(2.6rem,8vw,4.4rem);max-width:14em}
+.lede{font-size:clamp(1.35rem,1.1rem + 1.2vw,1.9rem);max-width:34rem}
+.doors,.tabs,.pager,.socials{justify-content:flex-start}
+.tabs{font-size:1.25rem}
+.pager{font-size:1.15rem}
+.nav{font-size:1.25rem}
+.tag{font-size:1.2rem}
+footer{width:100%;margin:0 auto;text-align:left;padding:3rem 1.25rem;font-size:1.1rem}
+footer .socials{margin:0 0 .8rem}
+@media (max-width:600px){
+  .page{padding-top:2rem}
+  .nav{gap:.1rem 1.2rem}
+  .doors{gap:.6rem .7rem;margin-top:1.5rem}
+  .doors .btn{padding:.5rem .9rem;font-size:1rem;letter-spacing:.05em}
+  .home-intro{padding-top:2rem}
+}
+
+/* the "added to cart" message stays fully hidden until it is used */
+.toast{visibility:hidden}
+.toast.show{visibility:visible}
 </style>
 </head>
 <body>
@@ -202,7 +246,7 @@ footer a{margin:0 .5rem}
   </button>
   <div class="logo-slot" id="logo" role="img" aria-label="Logo placeholder">insert logo</div>
   <a class="mark" href="#/">Tal</a>
-  <p class="tag">insert tagline</p>
+  <p class="tag" id="tag"></p>
   <nav aria-label="Main">
     <ul class="nav" id="nav">
       <li><a href="#/illustrations">illustrations</a></li>
@@ -223,9 +267,8 @@ footer a{margin:0 .5rem}
 <main id="app" tabindex="-1"></main>
 
 <footer>
-  insert footer line
+  <p id="footerLine"></p>
   <div id="footerSocials"></div>
-  <div><a href="#/upload">upload manager preview</a></div>
 </footer>
 
 <dialog id="cart" aria-label="Cart">
@@ -243,72 +286,46 @@ footer a{margin:0 .5rem}
 <script>
 /* ============================================================
    CONTENT
-   Everything Tal uploads lives in these lists. A real upload
-   manager saves entries in this same shape, so swapping the
-   placeholders for real photos later changes nothing else.
+   Everything here is loaded from the JSON files in /data at
+   startup, which is what the Pages CMS dashboard edits. Nothing
+   in this script needs to change when Tal adds real work.
    ============================================================ */
-const EMAIL = "hello@example.com";   // Tal's real email goes here
-const SHOW_RESUME = false;           // flip to true if Tal wants a resume link
-const SOCIALS = [   // paste a full link into url to turn a name on, leave it empty to keep it as a placeholder
-  {label:"instagram", url:""},
-  {label:"tiktok", url:""},
-  {label:"pinterest", url:""},
-  {label:"other", url:""}
-];
-const LOGO_SRC = "";                 // path to Tal's logo image once it exists, for example "logo.png"
-const INTRO_HELLO = "insert welcome line";   // big line on the home page
-const INTRO_TEXT = "insert bio";   // short intro paragraph on the home page
+let EMAIL = "hello@example.com", SHOW_RESUME = false, LOGO_SRC = "";
+let SOCIALS = [], shopIntro = {};
+let works = [], flash = [], products = [], musings = [];
+let INTRO_HELLO = "", INTRO_TEXT = "", TAGLINE = "", FOOTER_LINE = "", FLASH_INTRO = "", BOOKING_NOTE = "", CONTACT_NOTE = "";
 
-const works = [
-  {title:"illustration_01.jpg", category:"illustrations", medium:"medium", year:"year", tone:["#5b4a3f","#1f1b17"]},
-  {title:"illustration_02.jpg", category:"illustrations", medium:"medium", year:"year", tone:["#6e6450","#2b2b24"]},
-  {title:"illustration_03.jpg", category:"illustrations", medium:"medium", year:"year", tone:["#7b4a4f","#2e2a22"]},
-  {title:"digital_01.jpg", category:"digital", medium:"digital", year:"year", tone:["#4a4a3e","#15150f"]},
-  {title:"digital_02.jpg", category:"digital", medium:"digital", year:"year", tone:["#8c8a82","#22221c"]},
-  {title:"film_01.jpg", category:"film", medium:"film", year:"year", tone:["#9c8f78","#2e2a22"]},
-  {title:"film_02.jpg", category:"film", medium:"film", year:"year", tone:["#b9a88a","#3b3328"]},
-  {title:"collage_01.jpg", category:"collages", medium:"medium", year:"year", tone:["#7b4a4f","#b9a88a"]},
-  {title:"collage_02.jpg", category:"collages", medium:"medium", year:"year", tone:["#a08c58","#2b2b24"]},
-  {title:"tattoo_01.jpg", category:"tattoos", medium:"placement", year:"year", tone:["#c7b99b","#3b3328"]},
-  {title:"tattoo_02.jpg", category:"tattoos", medium:"placement", year:"year", tone:["#8c8a82","#1f1b17"]}
-];
-
-const flash = [
-  {name:"flash_01", claimed:false},{name:"flash_02", claimed:true},{name:"flash_03", claimed:false},
-  {name:"flash_04", claimed:false},{name:"flash_05", claimed:false},{name:"flash_06", claimed:true},
-  {name:"flash_07", claimed:false},{name:"flash_08", claimed:false}
-];
-
-const products = [
-  {title:"print_01.jpg", category:"prints", price:"$00", detail:"size and details", sold:false, tone:["#b9a88a","#5b4a3f"]},
-  {title:"print_02.jpg", category:"prints", price:"$00", detail:"size and details", sold:false, tone:["#9c8f78","#2e2a22"]},
-  {title:"zine_01.jpg", category:"zines", price:"$00", detail:"size and details", sold:false, tone:["#8c8a82","#2b2b24"]},
-  {title:"garment_01.jpg", category:"garments", price:"$00", detail:"size and details", sold:true, tone:["#7b4a4f","#2b2b24"]},
-  {title:"adornment_01.jpg", category:"adornments", price:"$00", detail:"size and details", sold:false, tone:["#a08c58","#3b3328"]}
-];
-
-const musings = [
-  {title:"musing_01", date:"date", body:"Text goes here."},
-  {title:"musing_02", date:"date", body:"Text goes here."},
-  {title:"musing_03", date:"date", body:"Text goes here."}
-];
+async function loadContent(){
+  const [site, w, f, p, m] = await Promise.all(
+    ["data/site.json","data/works.json","data/flash.json","data/products.json","data/musings.json"]
+      .map(u => fetch(u).then(r => r.json()))
+  );
+  EMAIL = site.email || EMAIL; SHOW_RESUME = !!site.showResume; LOGO_SRC = site.logo || "";
+  SOCIALS = site.socials || []; shopIntro = site.shopIntro || {};
+  INTRO_HELLO = site.introHello || ""; INTRO_TEXT = site.introText || "";
+  TAGLINE = site.tagline || ""; FOOTER_LINE = site.footer || "";
+  FLASH_INTRO = site.flashIntro || ""; BOOKING_NOTE = site.bookingNote || ""; CONTACT_NOTE = site.contactNote || "";
+  works = w; flash = f; products = p; musings = m;
+  document.getElementById("tag").textContent = TAGLINE;
+  buildShopPages();
+}
 
 /* ============================================================
    RENDERING
    ============================================================ */
 const labels = {illustrations:"illustrations", digital:"digital", film:"film", collages:"collages", tattoos:"tattoos",
   prints:"prints", zines:"zines", garments:"garments", adornments:"adornments"};
-const shopIntro = {
-  prints:"insert description",
-  zines:"insert description",
-  garments:"insert description",
-  adornments:"insert description"
-};
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PH_TONES = {   // a stand-in look for any piece with no photo yet
+  illustrations:["#5b4a3f","#1f1b17"], digital:["#4a4a3e","#15150f"], film:["#9c8f78","#2e2a22"],
+  collages:["#7b4a4f","#b9a88a"], tattoos:["#c7b99b","#3b3328"], prints:["#b9a88a","#5b4a3f"],
+  zines:["#8c8a82","#2b2b24"], garments:["#7b4a4f","#2b2b24"], adornments:["#a08c58","#3b3328"]
+};
 const art = item => item.image
-  ? `<img src="${item.image}" alt="${esc(item.title)}" loading="lazy">`
-  : `<div class="ph" style="background:linear-gradient(160deg,${item.tone[0]},${item.tone[1]})" role="img" aria-label="${esc(item.title)} placeholder"></div>`;
+  ? `<img src="${esc(item.image)}" alt="${esc(item.title || "")}" loading="lazy">`
+  : (() => { const t = PH_TONES[item.category] || ["#8c8a82","#2b2b24"];
+      return `<div class="ph" style="background:linear-gradient(160deg,${t[0]},${t[1]})" role="img" aria-label="${esc(item.title || "")} placeholder"></div>`; })();
 
 const PER = 8;      // pieces per page in a grid
 const PER_MUSING = 3;   // musings per page
@@ -387,9 +404,9 @@ const pages = {
   "tattoos": pg => `<section class="page"><h1 class="page-title">Tattoos</h1>${tattooTabs("work")}${workGrid(byCat("tattoos"), "tattoos", pg)}</section>`,
 
   "tattoos/flash": () => `<section class="page"><h1 class="page-title">Flash</h1>${tattooTabs("flash")}
-    <p class="page-intro">insert flash details</p>
+    <p class="page-intro">${esc(FLASH_INTRO)}</p>
     <div class="flash">${flash.map(f=>`<div class="${f.claimed?'claimed':''}">${esc(f.name)}</div>`).join("")}</div>
-    <div class="booking"><p>insert booking info</p>
+    <div class="booking"><p>${esc(BOOKING_NOTE)}</p>
       <a class="btn" href="mailto:${EMAIL}?subject=Tattoo%20booking">request a booking</a></div></section>`,
 
   "musings": pg => {
@@ -406,95 +423,18 @@ const pages = {
     }).join("")}</div></section>`,
 
   "contact": () => `<section class="page"><h1 class="page-title">Contact</h1>
-    <div class="contact"><p>insert contact note</p>
+    <div class="contact"><p>${esc(CONTACT_NOTE)}</p>
       <a class="email" href="mailto:${EMAIL}">${EMAIL}</a>
       ${SHOW_RESUME ? `<p><a class="btn" href="#">view resume</a></p>` : ""}
       ${socials()}</div></section>`,
 
-  "upload": () => `<section class="page"><h1 class="page-title">Upload Manager</h1>
-    <p class="page-intro">A preview of how Tal will add new work. On the finished site this page sits behind a private login, and uploads save permanently. In this draft they only last until the page is refreshed.</p>
-    <div class="admin">
-      <form class="panel" id="up">
-        <h2>add a piece</h2>
-        <div class="field"><label for="f-type">where does it go</label>
-          <select id="f-type" required>
-            <optgroup label="portfolio">
-              <option value="illustrations">illustrations</option><option value="digital">photographs, digital</option>
-              <option value="film">photographs, film</option><option value="collages">collages</option><option value="tattoos">tattoos</option>
-            </optgroup>
-            <optgroup label="creations shop">
-              <option value="prints">prints</option><option value="zines">zines</option><option value="garments">garments</option><option value="adornments">adornments</option>
-            </optgroup>
-          </select></div>
-        <label class="drop" id="drop" for="f-file"><span id="dropText">Drop a photo here or tap to choose one</span></label>
-        <input class="sr" type="file" id="f-file" accept="image/*">
-        <div class="field" style="margin-top:1rem"><label for="f-title">title</label><input id="f-title" required></div>
-        <div class="row">
-          <div class="field" id="w-medium"><label for="f-medium">medium or placement</label><input id="f-medium" placeholder="medium"></div>
-          <div class="field" id="w-year"><label for="f-year">year</label><input id="f-year" placeholder="2026"></div>
-          <div class="field" id="w-price" hidden><label for="f-price">price</label><input id="f-price" placeholder="$00"></div>
-          <div class="field" id="w-detail" hidden><label for="f-detail">details</label><input id="f-detail" placeholder="size and details"></div>
-        </div>
-        <button class="btn" type="submit">add to site</button>
-        <p class="status" id="status" role="status"></p>
-      </form>
-      <div class="panel"><h2>added this session</h2><ul class="added" id="added"><li class="hint">Nothing added yet.</li></ul></div>
-    </div></section>`
 };
 
-const session = [];
-const shopCats = ["prints","zines","garments","adornments"];
-
-function wireUpload(){
-  const type = document.getElementById("f-type"), file = document.getElementById("f-file"),
-        drop = document.getElementById("drop"), status = document.getElementById("status");
-  let dataUrl = null;
-  const toggle = () => {
-    const shop = shopCats.includes(type.value);
-    ["w-medium","w-year"].forEach(id=>document.getElementById(id).hidden = shop);
-    ["w-price","w-detail"].forEach(id=>document.getElementById(id).hidden = !shop);
-  };
-  type.addEventListener("change", toggle); toggle();
-  const load = f => {
-    if(!f || !f.type.startsWith("image/")){ status.textContent = "Choose an image file, like a JPG or PNG."; return; }
-    const r = new FileReader();
-    r.onload = () => { dataUrl = r.result; drop.innerHTML = `<img src="${dataUrl}" alt="Selected photo preview"><span>${esc(f.name)}</span>`; status.textContent=""; };
-    r.readAsDataURL(f);
-  };
-  file.addEventListener("change", () => load(file.files[0]));
-  ["dragenter","dragover"].forEach(e=>drop.addEventListener(e, ev=>{ev.preventDefault();drop.classList.add("over")}));
-  ["dragleave","drop"].forEach(e=>drop.addEventListener(e, ev=>{ev.preventDefault();drop.classList.remove("over")}));
-  drop.addEventListener("drop", ev => load(ev.dataTransfer.files[0]));
-
-  document.getElementById("up").addEventListener("submit", ev => {
-    ev.preventDefault();
-    if(!dataUrl){ status.textContent = "Add a photo before saving."; return; }
-    const v = id => document.getElementById(id).value.trim();
-    const c = type.value, shop = shopCats.includes(c);
-    const entry = shop
-      ? {title:v("f-title"), category:c, price:v("f-price")||"price on request", detail:v("f-detail"), sold:false, image:dataUrl}
-      : {title:v("f-title"), category:c, medium:v("f-medium")||c, year:v("f-year")||String(new Date().getFullYear()), image:dataUrl};
-    (shop ? products : works).unshift(entry);
-    session.push({entry, shop});
-    const dest = shop ? `#/creations/${c}` : (c==="digital"||c==="film" ? `#/photographs/${c}` : `#/${c}`);
-    status.innerHTML = `Added. <a href="${dest}">See it on the ${labels[c]} page</a>`;
-    ev.target.reset(); dataUrl = null; drop.innerHTML = `<span>Drop a photo here or tap to choose one</span>`; toggle();
-    listSession();
-  });
-  listSession();
+function buildShopPages(){
+  const shopCats = Object.keys(shopIntro);
+  shopCats.forEach(c => pages[`creations/${c}`] = pg => `<section class="page"><h1 class="page-title">${c[0].toUpperCase()+c.slice(1)}</h1>
+    <p class="page-intro">${esc(shopIntro[c])}</p>${goodsGrid(products.filter(p=>p.category===c), `creations/${c}`, pg)}<a class="more" href="#/creations">back to creations</a></section>`);
 }
-function listSession(){
-  const ul = document.getElementById("added"); if(!ul) return;
-  if(!session.length){ ul.innerHTML = `<li class="hint">Nothing added yet.</li>`; return; }
-  ul.innerHTML = session.map((s,i)=>`<li><span>${esc(s.entry.title)} <em class="hint">in ${labels[s.entry.category]}</em></span><button data-rm="${i}">remove</button></li>`).join("");
-  ul.querySelectorAll("[data-rm]").forEach(b=>b.addEventListener("click",()=>{
-    const s = session[+b.dataset.rm], list = s.shop ? products : works;
-    list.splice(list.indexOf(s.entry),1); session.splice(+b.dataset.rm,1); listSession();
-  }));
-}
-
-shopCats.forEach(c => pages[`creations/${c}`] = pg => `<section class="page"><h1 class="page-title">${c[0].toUpperCase()+c.slice(1)}</h1>
-  <p class="page-intro">${shopIntro[c]}</p>${goodsGrid(products.filter(p=>p.category===c), `creations/${c}`, pg)}<a class="more" href="#/creations">back to creations</a></section>`);
 
 /* ============================================================
    CART
@@ -525,7 +465,7 @@ function renderCart(){
   }
   const total = cart.reduce((a,l)=>a+money(l.price)*l.qty,0);
   body.innerHTML = `<ul class="lines">${cart.map((l,i)=>`<li>
-      <div class="frame">${art(l.tone ? l : {...l, tone:["#8c8a82","#2b2b24"]})}</div>
+      <div class="frame">${art(l)}</div>
       <div><p>${esc(l.title)}</p><small>${esc(l.price)}</small></div>
       <div class="qty"><button data-q="${i}" data-d="-1" aria-label="Remove one">&minus;</button><span>${l.qty}</span><button data-q="${i}" data-d="1" aria-label="Add one">+</button></div>
     </li>`).join("")}</ul>
@@ -567,7 +507,6 @@ function render(){
     on ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current");
   });
   app.querySelectorAll(".work").forEach(b=>b.addEventListener("click",()=>openWork(works[+b.dataset.i])));
-  if(route==="upload") wireUpload();
   if(route) { app.focus({preventScroll:true}); window.scrollTo({top:document.querySelector(".rule").offsetTop - 10}); }
   else window.scrollTo({top:0});
   const tail = route.split("/").pop();
@@ -578,14 +517,21 @@ function openWork(w){
   document.getElementById("box").showModal();
 }
 document.getElementById("box").addEventListener("click", e => { if(e.target.id==="box") e.target.close(); });
-if(LOGO_SRC){
+
+function paintSiteChrome(){
   const l = document.getElementById("logo");
-  l.classList.add("filled"); l.removeAttribute("role"); l.removeAttribute("aria-label");
-  l.innerHTML = `<img src="${esc(LOGO_SRC)}" alt="Tal">`;
+  if(LOGO_SRC){
+    l.classList.add("filled"); l.removeAttribute("role"); l.removeAttribute("aria-label");
+    l.innerHTML = `<img src="${esc(LOGO_SRC)}" alt="Tal">`;
+  }
+  document.getElementById("footerLine").textContent = FOOTER_LINE;
+  document.getElementById("footerSocials").innerHTML = socials();
 }
-document.getElementById("footerSocials").innerHTML = socials();
-window.addEventListener("hashchange", render);
-render();
+
+document.getElementById("app").innerHTML = `<p class="empty" style="margin-top:4rem">Loading the site...</p>`;
+loadContent()
+  .then(() => { paintSiteChrome(); window.addEventListener("hashchange", render); render(); })
+  .catch(() => { document.getElementById("app").innerHTML = `<p class="empty" style="margin-top:4rem">The site's content could not be loaded. If you opened this file directly, open it through a web address instead, since the data files only load over http.</p>`; });
 </script>
 </body>
 </html>
