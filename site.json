@@ -1,0 +1,36 @@
+{
+  "email": "hello@example.com",
+  "showResume": false,
+  "logo": "",
+  "introHello": "insert welcome line",
+  "introText": "insert bio",
+  "tagline": "insert tagline",
+  "footer": "insert footer line",
+  "flashIntro": "insert flash details",
+  "bookingNote": "insert booking info",
+  "contactNote": "insert contact note",
+  "socials": [
+    {
+      "label": "instagram",
+      "url": ""
+    },
+    {
+      "label": "tiktok",
+      "url": ""
+    },
+    {
+      "label": "pinterest",
+      "url": ""
+    },
+    {
+      "label": "other",
+      "url": ""
+    }
+  ],
+  "shopIntro": {
+    "prints": "insert description",
+    "zines": "insert description",
+    "garments": "insert description",
+    "adornments": "insert description"
+  }
+}

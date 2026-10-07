@@ -1,0 +1,42 @@
+[
+  {
+    "name": "flash_01",
+    "claimed": false,
+    "image": ""
+  },
+  {
+    "name": "flash_02",
+    "claimed": true,
+    "image": ""
+  },
+  {
+    "name": "flash_03",
+    "claimed": false,
+    "image": ""
+  },
+  {
+    "name": "flash_04",
+    "claimed": false,
+    "image": ""
+  },
+  {
+    "name": "flash_05",
+    "claimed": false,
+    "image": ""
+  },
+  {
+    "name": "flash_06",
+    "claimed": true,
+    "image": ""
+  },
+  {
+    "name": "flash_07",
+    "claimed": false,
+    "image": ""
+  },
+  {
+    "name": "flash_08",
+    "claimed": false,
+    "image": ""
+  }
+]

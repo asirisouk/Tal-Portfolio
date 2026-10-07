@@ -1,0 +1,42 @@
+[
+  {
+    "title": "print_01.jpg",
+    "category": "prints",
+    "price": "$00",
+    "detail": "size and details",
+    "sold": false,
+    "image": ""
+  },
+  {
+    "title": "print_02.jpg",
+    "category": "prints",
+    "price": "$00",
+    "detail": "size and details",
+    "sold": false,
+    "image": ""
+  },
+  {
+    "title": "zine_01.jpg",
+    "category": "zines",
+    "price": "$00",
+    "detail": "size and details",
+    "sold": false,
+    "image": ""
+  },
+  {
+    "title": "garment_01.jpg",
+    "category": "garments",
+    "price": "$00",
+    "detail": "size and details",
+    "sold": true,
+    "image": ""
+  },
+  {
+    "title": "adornment_01.jpg",
+    "category": "adornments",
+    "price": "$00",
+    "detail": "size and details",
+    "sold": false,
+    "image": ""
+  }
+]

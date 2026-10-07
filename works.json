@@ -1,0 +1,79 @@
+[
+  {
+    "title": "illustration_01.jpg",
+    "category": "illustrations",
+    "medium": "medium",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "illustration_02.jpg",
+    "category": "illustrations",
+    "medium": "medium",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "illustration_03.jpg",
+    "category": "illustrations",
+    "medium": "medium",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "digital_01.jpg",
+    "category": "digital",
+    "medium": "digital",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "digital_02.jpg",
+    "category": "digital",
+    "medium": "digital",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "film_01.jpg",
+    "category": "film",
+    "medium": "film",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "film_02.jpg",
+    "category": "film",
+    "medium": "film",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "collage_01.jpg",
+    "category": "collages",
+    "medium": "medium",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "collage_02.jpg",
+    "category": "collages",
+    "medium": "medium",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "tattoo_01.jpg",
+    "category": "tattoos",
+    "medium": "placement",
+    "year": "year",
+    "image": ""
+  },
+  {
+    "title": "tattoo_02.jpg",
+    "category": "tattoos",
+    "medium": "placement",
+    "year": "year",
+    "image": ""
+  }
+]
